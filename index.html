@@ -74,6 +74,29 @@
     font-size:13px;
     margin:0 0 18px;
   }
+  .view-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .view-tab{
+    flex:1;
+    text-align:center;
+    padding:11px 10px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .view-tab.active{
+    border-color:var(--blue);
+    color:var(--blue-dark);
+    background:#EAF1FD;
+  }
   .cards{
     display:grid;
     grid-template-columns:repeat(2, 1fr);
@@ -97,6 +120,22 @@
   .card:active{transform:scale(0.97);}
   .card:hover{border-color:var(--accent, var(--blue));box-shadow:0 6px 18px rgba(29,78,137,0.12);}
   .card.disabled{opacity:0.5;pointer-events:none;}
+  .card.selected{
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(45,108,223,0.12);
+  }
+  .card.selected::after{
+    content:"✓ 내 선택";
+    position:absolute;
+    top:16px;
+    right:16px;
+    font-size:11px;
+    font-weight:800;
+    color:#fff;
+    background:var(--accent, var(--blue));
+    padding:3px 9px;
+    border-radius:999px;
+  }
   .card-icon{
     width:52px;
     height:52px;
@@ -233,11 +272,84 @@
     color:var(--muted);
   }
   .admin-link{
-    display:block;
+    display:inline-block;
     text-align:center;
     margin-top:6px;
     font-size:11.5px;
     color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+  .admin-row{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+    margin-top:6px;
+  }
+  .confirmed-banner{
+    background:#EAF7EF;
+    border:2px solid #2FA36B;
+    color:#1B6B44;
+    border-radius:16px;
+    padding:14px 18px;
+    text-align:center;
+    font-weight:700;
+    font-size:14px;
+    margin-bottom:18px;
+  }
+  .confirmed-banner .go-next{
+    display:inline-block;
+    margin-top:10px;
+    background:#2FA36B;
+    color:#fff;
+    font-weight:700;
+    font-size:13px;
+    padding:9px 16px;
+    border-radius:999px;
+    text-decoration:none;
+  }
+  .admin-confirm-panel{
+    display:none;
+    background:#fff;
+    border:2px dashed var(--line);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:20px;
+  }
+  .admin-confirm-panel p{
+    margin:0 0 10px;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    text-align:center;
+  }
+  .admin-confirm-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+    margin-bottom:10px;
+  }
+  .admin-confirm-btn{
+    border:2px solid var(--line);
+    background:#fff;
+    border-radius:10px;
+    padding:10px 8px;
+    font-size:12.5px;
+    font-weight:700;
+    cursor:pointer;
+    color:var(--ink);
+  }
+  .admin-confirm-btn[data-choice="customer"]{border-color:var(--customer);color:var(--customer);}
+  .admin-confirm-btn[data-choice="speed"]{border-color:var(--speed);color:var(--speed);}
+  .admin-confirm-btn[data-choice="global"]{border-color:var(--global);color:var(--global);}
+  .admin-confirm-btn[data-choice="high_perf"]{border-color:var(--highperf);color:var(--highperf);}
+  .admin-confirm-cancel{
+    display:block;
+    margin:0 auto;
+    background:none;
+    border:none;
+    color:var(--muted);
+    font-size:12px;
     text-decoration:underline;
     cursor:pointer;
   }
@@ -259,14 +371,20 @@
 <header class="top">
   <div class="flow-tabs" id="flowTabs">
     <span class="flow-tab active">① 오늘의 포커스 픽</span>
+    <a class="flow-tab" href="case.html" style="text-decoration:none;">② 케이스 공유</a>
   </div>
   <h1>오늘의 포커스 픽</h1>
   <p>ZA2030 4대 요소 중, 오늘 우리 팀 허들에서 함께 다루고 싶은 요소를 골라주세요.</p>
 </header>
 
 <main>
+  <div class="view-tabs" id="viewTabs">
+    <button type="button" class="view-tab" id="tabSelect">선택하기</button>
+    <button type="button" class="view-tab" id="tabResults">함께 보기</button>
+  </div>
+
   <section id="selectView">
-    <p class="hint">카드를 탭하면 바로 반영돼요 (다시 고를 수 있어요)</p>
+    <p class="hint">카드를 탭하면 바로 반영되고, 언제든 다시 바꿀 수 있어요</p>
     <div class="cards">
       <button class="card" data-choice="customer">
         <img class="card-icon" src="data:image/png;base64,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" alt="">
@@ -292,6 +410,8 @@
   </section>
 
   <section id="resultsView">
+    <div class="confirmed-banner" id="confirmedBanner" style="display:none;"></div>
+
     <div class="result-summary">
       <div class="count" id="totalCount">0</div>
       <div class="label">명 참여</div>
@@ -325,9 +445,23 @@
     <div class="actions">
       <button class="btn-secondary" id="revoteBtn">다시 선택하기</button>
     </div>
+
+    <div class="admin-confirm-panel" id="adminConfirmPanel">
+      <p>오늘의 요소로 최종 확정할 항목을 선택하세요</p>
+      <div class="admin-confirm-grid">
+        <button type="button" class="admin-confirm-btn" data-choice="customer">Customer at the Core</button>
+        <button type="button" class="admin-confirm-btn" data-choice="speed">Speed</button>
+        <button type="button" class="admin-confirm-btn" data-choice="global">Truly Global</button>
+        <button type="button" class="admin-confirm-btn" data-choice="high_perf">High Performance<br>Team ZEISS</button>
+      </div>
+      <button type="button" class="admin-confirm-cancel" id="adminConfirmCancel">취소</button>
+    </div>
   </section>
 
-  <span class="admin-link" id="adminLink">관리자</span>
+  <div class="admin-row">
+    <span class="admin-link" id="confirmLink">오늘의 요소 확정하기</span>
+    <span class="admin-link" id="adminLink">관리자(초기화)</span>
+  </div>
 </main>
 
 <footer>
@@ -352,8 +486,17 @@
   const tieNote = document.getElementById('tieNote');
   const revoteBtn = document.getElementById('revoteBtn');
   const adminLink = document.getElementById('adminLink');
+  const confirmLink = document.getElementById('confirmLink');
+  const adminConfirmPanel = document.getElementById('adminConfirmPanel');
+  const adminConfirmCancel = document.getElementById('adminConfirmCancel');
+  const confirmedBanner = document.getElementById('confirmedBanner');
+  const tabSelect = document.getElementById('tabSelect');
+  const tabResults = document.getElementById('tabResults');
+
+  let pendingAdminPassword = null;
 
   let pollTimer = null;
+  let currentView = 'select';
 
   function getDeviceToken(){
     let t = localStorage.getItem('th_device_token');
@@ -364,15 +507,31 @@
     return t;
   }
 
+  function markMyCard(){
+    const myChoice = localStorage.getItem('th_my_choice');
+    document.querySelectorAll('.card').forEach(card => {
+      card.classList.toggle('selected', !!myChoice && card.dataset.choice === myChoice);
+    });
+  }
+
+  // "선택하기"/"함께 보기"는 순전히 탭 전환입니다 — 투표나 폴링이 자동으로 화면을
+  // 바꾸지 않고, 사용자가 탭을 누르거나 카드를 탭할 때만 전환됩니다.
   function showSelect(){
-    selectView.style.display = '';
+    currentView = 'select';
+    selectView.style.display = 'block';
     resultsView.style.display = 'none';
+    tabSelect.classList.add('active');
+    tabResults.classList.remove('active');
+    markMyCard();
     stopPolling();
   }
 
   function showResults(){
+    currentView = 'results';
     selectView.style.display = 'none';
     resultsView.style.display = 'block';
+    tabResults.classList.add('active');
+    tabSelect.classList.remove('active');
     fetchAndRender();
     startPolling();
   }
@@ -390,7 +549,7 @@
   }
 
   document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible' && resultsView.style.display !== 'none'){
+    if(document.visibilityState === 'visible' && currentView === 'results'){
       fetchAndRender();
     }
   });
@@ -401,12 +560,14 @@
       const data = await res.json();
       render(data);
 
-      // 서버가 초기화됐는데 내 로컬엔 예전 선택이 남아있는 경우 정리
+      // 관리자가 전체 초기화를 하면(서버 resetAt이 바뀜) 내 로컬 선택 기록만 조용히
+      // 지웁니다 — "함께 보기" 화면을 강제로 바꾸지 않고, "선택하기" 탭으로 가면
+      // 다시 고를 수 있게만 해둡니다.
       const myResetAt = localStorage.getItem('th_vote_reset_at');
       if(myResetAt && data.resetAt && myResetAt !== data.resetAt){
         localStorage.removeItem('th_my_choice');
         localStorage.removeItem('th_vote_reset_at');
-        showSelect();
+        markMyCard();
       }
     }catch(e){
       // 네트워크 오류 시 조용히 다음 폴링에 재시도
@@ -441,6 +602,14 @@
       winnerBanner.innerHTML = `${winners.map(w=>NAMES[w]).join(' / ')} 동률입니다<div class="sub">진행자가 최종 요소를 정해주세요</div>`;
     }
     tieNote.style.display = winners.length > 1 ? '' : 'none';
+
+    if(data.confirmedChoice && NAMES[data.confirmedChoice]){
+      confirmedBanner.style.display = '';
+      confirmedBanner.innerHTML = `✅ 오늘의 확정 요소: <u>${NAMES[data.confirmedChoice]}</u>` +
+        `<br><a class="go-next" href="case.html">케이스 공유 활동으로 이동 →</a>`;
+    } else {
+      confirmedBanner.style.display = 'none';
+    }
   }
 
   async function submitVote(choice){
@@ -470,9 +639,11 @@
   });
 
   revoteBtn.addEventListener('click', showSelect);
+  tabSelect.addEventListener('click', showSelect);
+  tabResults.addEventListener('click', showResults);
 
   adminLink.addEventListener('click', async () => {
-    const pw = prompt('관리자 비밀번호를 입력하세요 (전체 초기화)');
+    const pw = prompt('관리자 비밀번호를 입력하세요 (전체 초기화 — 확정된 요소도 함께 초기화됩니다)');
     if(pw === null) return;
     try{
       const res = await fetch(API, {
@@ -494,15 +665,48 @@
     }
   });
 
-  // 초기 로드
-  (async function init(){
+  confirmLink.addEventListener('click', () => {
+    const pw = prompt('관리자 비밀번호를 입력하세요 (오늘의 요소 확정)');
+    if(pw === null) return;
+    pendingAdminPassword = pw;
+    adminConfirmPanel.style.display = 'block';
+  });
+
+  adminConfirmCancel.addEventListener('click', () => {
+    pendingAdminPassword = null;
+    adminConfirmPanel.style.display = 'none';
+  });
+
+  document.querySelectorAll('.admin-confirm-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      if(!pendingAdminPassword) return;
+      try{
+        const res = await fetch(API, {
+          method:'POST',
+          headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ action:'confirm', choice: btn.dataset.choice, adminPassword: pendingAdminPassword })
+        });
+        const data = await res.json();
+        if(data.ok){
+          adminConfirmPanel.style.display = 'none';
+          pendingAdminPassword = null;
+          await fetchAndRender();
+        } else {
+          alert('비밀번호가 올바르지 않습니다.');
+        }
+      }catch(e){
+        alert('확정 중 오류가 발생했습니다.');
+      }
+    });
+  });
+
+  // 초기 로드: 이미 투표했다면 함께 보기, 아니면 선택하기로 시작 — 이후에는 탭으로 자유롭게 전환
+  (function init(){
     const myChoice = localStorage.getItem('th_my_choice');
     if(myChoice){
       showResults();
     } else {
       showSelect();
-      // 결과가 궁금할 수 있으니 총 인원수 정도는 미리 한 번 조용히 받아둬도 되지만,
-      // 아직 선택 전이므로 선택 화면만 노출
     }
   })();
 })();
