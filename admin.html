@@ -212,6 +212,56 @@
     font-size:11.5px;
     color:var(--muted);
   }
+
+  .lock-wrap{
+    max-width:400px;
+    margin:0 auto;
+    padding:60px 16px;
+  }
+  .lock-card{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:28px 24px;
+    text-align:center;
+  }
+  .lock-card .lock-icon{
+    font-size:32px;
+    margin-bottom:10px;
+  }
+  .lock-card h2{
+    margin:0 0 6px;
+    font-size:17px;
+    font-weight:800;
+  }
+  .lock-card .sub{
+    margin:0 0 18px;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .lock-card .field-input{
+    text-align:center;
+    margin-bottom:12px;
+  }
+  .lock-btn{
+    width:100%;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .lock-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+  .lock-error{
+    margin-top:12px;
+    font-size:12.5px;
+    color:var(--danger);
+    min-height:16px;
+  }
 </style>
 </head>
 <body>
@@ -222,7 +272,18 @@
   <p>팀 허들 4개 활동(①~④)의 전체 데이터를 한 번에 확인·다운로드·초기화할 수 있어요.</p>
 </header>
 
-<main>
+<div class="lock-wrap" id="lockWrap">
+  <div class="lock-card">
+    <div class="lock-icon">🔒</div>
+    <h2>관리자 비밀번호 확인</h2>
+    <p class="sub">비밀번호를 입력해야 데이터 현황 조회·다운로드·초기화 화면을 볼 수 있어요.</p>
+    <input type="password" class="field-input" id="lockPw" placeholder="관리자 비밀번호">
+    <button type="button" class="lock-btn" id="lockBtn">입장하기</button>
+    <p class="lock-error" id="lockError"></p>
+  </div>
+</div>
+
+<main id="dashboardWrap" style="display:none;">
   <div class="card">
     <h2>현재 데이터 현황</h2>
     <p class="sub">각 활동 API에서 실시간으로 불러온 값이에요.</p>
@@ -283,6 +344,13 @@
     global: 'Truly Global',
     high_perf: 'High Performance Team ZEISS'
   };
+
+  const AUTH_API = '/api/admin-auth';
+  const lockWrap = document.getElementById('lockWrap');
+  const dashboardWrap = document.getElementById('dashboardWrap');
+  const lockPw = document.getElementById('lockPw');
+  const lockBtn = document.getElementById('lockBtn');
+  const lockError = document.getElementById('lockError');
 
   const statVote = document.getElementById('statVote');
   const statCase = document.getElementById('statCase');
@@ -454,7 +522,35 @@
     });
   });
 
-  fetchAll();
+  async function tryUnlock(){
+    const pw = lockPw.value;
+    if(!pw){ lockError.textContent = '비밀번호를 입력해주세요.'; return; }
+    lockBtn.disabled = true;
+    lockError.textContent = '';
+    try{
+      const res = await fetch(AUTH_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ adminPassword: pw })
+      });
+      const data = await res.json();
+      if(data.ok){
+        lockWrap.style.display = 'none';
+        dashboardWrap.style.display = 'block';
+        adminPw.value = pw; // 초기화 비밀번호칸에 미리 채워둠(다시 입력할 필요 없게)
+        fetchAll();
+      } else {
+        lockError.textContent = '비밀번호가 올바르지 않습니다.';
+      }
+    }catch(e){
+      lockError.textContent = '확인 중 오류가 발생했습니다. 다시 시도해주세요.';
+    }finally{
+      lockBtn.disabled = false;
+    }
+  }
+
+  lockBtn.addEventListener('click', tryUnlock);
+  lockPw.addEventListener('keydown', (e) => { if(e.key === 'Enter') tryUnlock(); });
 })();
 </script>
 
