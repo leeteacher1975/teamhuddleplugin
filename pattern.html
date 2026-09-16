@@ -1,0 +1,666 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>패턴 &amp; 액션 아이디어 | ZA2030 팀 허들</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --blue-dark:#1D4E89;
+    --blue:#2D6CDF;
+    --customer:#2D6CDF;
+    --speed:#E8823C;
+    --global:#2FA36B;
+    --highperf:#7B5FC7;
+    --stop:#D64550;
+    --start:#2FA36B;
+    --amplify:#E8823C;
+    --ink:#1B2430;
+    --muted:#68758A;
+    --bg:#F4F7FC;
+    --card-bg:#FFFFFF;
+    --line:#E4E9F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    background:linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color:#fff;
+    padding:22px 20px 26px;
+  }
+  .flow-tabs{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .flow-tab{
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.16);
+    color:#fff;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .flow-tab.active{
+    background:#fff;
+    color:var(--blue-dark);
+  }
+  header.top h1{
+    margin:0 0 6px;
+    font-size:22px;
+    font-weight:800;
+  }
+  header.top p{
+    margin:0;
+    font-size:14px;
+    opacity:0.92;
+    line-height:1.5;
+  }
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:20px 16px 40px;
+  }
+
+  .waiting-box{
+    background:var(--card-bg);
+    border:2px dashed var(--line);
+    border-radius:18px;
+    padding:32px 22px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .waiting-box a{
+    display:inline-block;
+    margin-top:14px;
+    background:var(--blue);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:999px;
+  }
+
+  .context-line{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:16px;
+  }
+  .context-line b{ color:var(--ink); }
+
+  .keyword-card{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:22px 20px;
+    margin-bottom:22px;
+  }
+  .keyword-card h2{
+    margin:0 0 4px;
+    font-size:16px;
+    font-weight:800;
+  }
+  .keyword-card .sub{
+    margin:0 0 16px;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .keyword-cloud{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px;
+    justify-content:center;
+    align-items:center;
+    padding:6px 0;
+  }
+  .keyword-chip{
+    display:inline-flex;
+    align-items:baseline;
+    gap:5px;
+    background:#EAF1FD;
+    color:var(--blue-dark);
+    border-radius:999px;
+    padding:8px 16px;
+    font-weight:800;
+    white-space:nowrap;
+  }
+  .keyword-chip .cnt{
+    font-size:11px;
+    font-weight:700;
+    color:var(--blue);
+    opacity:0.8;
+  }
+  .keyword-empty{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:10px 0;
+  }
+
+  .ssa-title{
+    text-align:center;
+    font-size:15px;
+    font-weight:800;
+    margin:0 0 4px;
+  }
+  .ssa-desc{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--muted);
+    margin:0 0 18px;
+  }
+
+  .ssa-board{
+    display:flex;
+    flex-direction:column;
+    gap:16px;
+  }
+  @media (min-width:760px){
+    .ssa-board{
+      flex-direction:row;
+      align-items:flex-start;
+    }
+    .ssa-col{ flex:1; min-width:0; }
+  }
+
+  .ssa-col{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:16px;
+  }
+  .ssa-col[data-cat="stop"]{ border-top:5px solid var(--stop); }
+  .ssa-col[data-cat="start"]{ border-top:5px solid var(--start); }
+  .ssa-col[data-cat="amplify"]{ border-top:5px solid var(--amplify); }
+
+  .ssa-col-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:4px;
+  }
+  .ssa-col-head .name{
+    font-weight:800;
+    font-size:15px;
+  }
+  .ssa-col[data-cat="stop"] .name{ color:var(--stop); }
+  .ssa-col[data-cat="start"] .name{ color:var(--start); }
+  .ssa-col[data-cat="amplify"] .name{ color:var(--amplify); }
+  .ssa-col-head .quota{
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .ssa-col-desc{
+    font-size:11.5px;
+    color:var(--muted);
+    margin:0 0 10px;
+    line-height:1.5;
+  }
+
+  .ssa-input-row{
+    display:flex;
+    gap:6px;
+    margin-bottom:12px;
+  }
+  .ssa-input{
+    flex:1;
+    border:2px solid var(--line);
+    border-radius:10px;
+    padding:9px 11px;
+    font-size:13.5px;
+    font-family:inherit;
+    color:var(--ink);
+    resize:none;
+    min-height:40px;
+  }
+  .ssa-add-btn{
+    border:none;
+    border-radius:10px;
+    padding:0 14px;
+    font-weight:800;
+    font-size:13px;
+    color:#fff;
+    cursor:pointer;
+    white-space:nowrap;
+  }
+  .ssa-col[data-cat="stop"] .ssa-add-btn{ background:var(--stop); }
+  .ssa-col[data-cat="start"] .ssa-add-btn{ background:var(--start); }
+  .ssa-col[data-cat="amplify"] .ssa-add-btn{ background:var(--amplify); }
+  .ssa-add-btn:disabled{ opacity:0.4; cursor:not-allowed; }
+
+  .ssa-cards{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .ssa-card{
+    position:relative;
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:10px 30px 10px 12px;
+    font-size:13px;
+    line-height:1.5;
+    white-space:pre-wrap;
+  }
+  .ssa-card.mine{
+    background:#fff;
+    border-color:var(--muted);
+  }
+  .ssa-card .del-btn{
+    position:absolute;
+    top:6px;
+    right:6px;
+    border:none;
+    background:none;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1;
+    cursor:pointer;
+    padding:2px 4px;
+  }
+  .ssa-empty{
+    color:var(--muted);
+    font-size:12.5px;
+    text-align:center;
+    padding:14px 0;
+  }
+
+  .admin-row{
+    display:flex;
+    justify-content:center;
+    margin-top:22px;
+  }
+  .admin-link{
+    font-size:11.5px;
+    color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  footer{
+    text-align:center;
+    padding:24px 16px 30px;
+    font-size:11.5px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="flow-tabs">
+    <a class="flow-tab" href="index.html" style="text-decoration:none;">① 오늘의 포커스 픽</a>
+    <a class="flow-tab" href="case.html" style="text-decoration:none;">② 케이스 공유</a>
+    <span class="flow-tab active">③ 패턴 &amp; 액션 아이디어</span>
+  </div>
+  <h1>패턴 &amp; 액션 아이디어</h1>
+  <p>공유된 케이스에서 자주 나온 단어를 확인하고, Stop·Start·Amplify 아이디어를 자유롭게 남겨주세요.</p>
+</header>
+
+<main>
+  <div id="waitingBox" class="waiting-box" style="display:none;">
+    아직 분석할 케이스가 없어요.<br>
+    "케이스 공유" 활동에서 먼저 케이스를 모아주세요.
+    <br>
+    <a href="case.html">② 케이스 공유로 이동</a>
+  </div>
+
+  <div id="mainContent" style="display:none;">
+    <p class="context-line" id="contextLine"></p>
+
+    <div class="keyword-card">
+      <h2>자주 등장한 키워드 Top 8</h2>
+      <p class="sub">형태소 분석기 없이 조사를 제거한 간단한 빈도 분석이라 완벽하진 않지만, 전체적인 흐름을 파악하는 참고용으로 봐주세요.</p>
+      <div class="keyword-cloud" id="keywordCloud"></div>
+    </div>
+
+    <p class="ssa-title">Stop · Start · Amplify</p>
+    <p class="ssa-desc">위 키워드들을 참고해서, 각 칼럼에 자유롭게 아이디어를 남겨주세요 (완전 익명 · 칼럼당 최대 3개)</p>
+
+    <div class="ssa-board">
+      <div class="ssa-col" data-cat="stop">
+        <div class="ssa-col-head"><span class="name">🛑 Stop</span><span class="quota" data-quota="stop">0/3</span></div>
+        <p class="ssa-col-desc">멈추거나 그만해야 할 것</p>
+        <div class="ssa-input-row">
+          <textarea class="ssa-input" data-input="stop" placeholder="예: 불필요한 보고 절차"></textarea>
+        </div>
+        <button type="button" class="ssa-add-btn" data-submit="stop">추가</button>
+        <div class="ssa-cards" data-list="stop" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="ssa-col" data-cat="start">
+        <div class="ssa-col-head"><span class="name">🌱 Start</span><span class="quota" data-quota="start">0/3</span></div>
+        <p class="ssa-col-desc">새로 시작하면 좋을 것</p>
+        <div class="ssa-input-row">
+          <textarea class="ssa-input" data-input="start" placeholder="예: 주간 고객 피드백 공유 세션"></textarea>
+        </div>
+        <button type="button" class="ssa-add-btn" data-submit="start">추가</button>
+        <div class="ssa-cards" data-list="start" style="margin-top:12px;"></div>
+      </div>
+
+      <div class="ssa-col" data-cat="amplify">
+        <div class="ssa-col-head"><span class="name">📣 Amplify</span><span class="quota" data-quota="amplify">0/3</span></div>
+        <p class="ssa-col-desc">이미 잘하고 있어서 더 확산할 것</p>
+        <div class="ssa-input-row">
+          <textarea class="ssa-input" data-input="amplify" placeholder="예: 팀 간 자발적 지식 공유"></textarea>
+        </div>
+        <button type="button" class="ssa-add-btn" data-submit="amplify">추가</button>
+        <div class="ssa-cards" data-list="amplify" style="margin-top:12px;"></div>
+      </div>
+    </div>
+
+    <div class="admin-row">
+      <span class="admin-link" id="adminLink">관리자(초기화)</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2026 Joanna Lee. All rights reserved.
+</footer>
+
+<script>
+(function(){
+  const VOTE_API = '/api/vote';
+  const CASE_API = '/api/case';
+  const SSA_API = '/api/ssa';
+  const CATS = ['stop','start','amplify'];
+  const MAX_PER_CAT = 3;
+  const TOP_N = 8;
+
+  const NAMES = {
+    customer: 'Customer at the Core',
+    speed: 'Speed',
+    global: 'Truly Global',
+    high_perf: 'High Performance Team ZEISS'
+  };
+
+  const waitingBox = document.getElementById('waitingBox');
+  const mainContent = document.getElementById('mainContent');
+  const contextLine = document.getElementById('contextLine');
+  const keywordCloud = document.getElementById('keywordCloud');
+  const adminLink = document.getElementById('adminLink');
+
+  let pollTimer = null;
+
+  function getDeviceToken(){
+    let t = localStorage.getItem('th_device_token');
+    if(!t){
+      t = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('th_device_token', t);
+    }
+    return t;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  // ---- 아주 단순한 한국어 키워드 빈도 분석 ----
+  // 형태소 분석기가 없는 환경이라 완벽하진 않지만, 흔한 조사/어미를 잘라내고
+  // 불용어를 제외한 뒤 빈도를 세는 근사치 방식입니다.
+  const PARTICLE_SUFFIXES = [
+    '에게서','으로부터','이라는','에서는','에서도','로서는','에게는','까지도','부터는',
+    '에서','으로','에게','께서','이나','라는','에는','에도','만큼','처럼','보다','밖에','조차','마저','든지','라도',
+    '이라','라고','하고','에','와','과','도','만','로','께','나',
+    '은','는','이','가','을','를','의'
+  ].sort((a,b) => b.length - a.length);
+
+  const ENDING_SUFFIXES = [
+    '하였습니다','되었습니다','했습니다','았습니다','었습니다','습니다','됩니다','합니다',
+    '했어요','았어요','었어요','였어요','아요','어요','이에요','예요','입니다','였습니다','네요'
+  ].sort((a,b) => b.length - a.length);
+
+  const STOPWORDS = new Set([
+    '그리고','그래서','그러나','하지만','그런데','저는','제가','우리는','우리가','있습니다','있어요',
+    '했습니다','했어요','합니다','해요','됩니다','같습니다','같아요','정말','너무','매우','조금','그냥',
+    '이런','저런','그런','등등','때문에','통해','통해서','대해','대한','위해','위해서','그것','저것','이것',
+    '것을','것이','것은','것도','수있','수있는','수있도록','있는','없는','대해서','관련','관련해서'
+  ]);
+
+  function stripOnce(token, suffixList){
+    for(const suf of suffixList){
+      if(token.length > suf.length + 1 && token.endsWith(suf)){
+        return token.slice(0, -suf.length);
+      }
+    }
+    return token;
+  }
+
+  // 어미/조사가 겹쳐 붙은 경우(예: "고객과의" → "고객과" → "고객")를 대비해
+  // 변화가 없을 때까지 최대 3회 반복해서 벗겨냅니다.
+  function cleanToken(token){
+    let tok = token;
+    for(let i = 0; i < 3; i++){
+      const before = tok;
+      tok = stripOnce(tok, ENDING_SUFFIXES);
+      tok = stripOnce(tok, PARTICLE_SUFFIXES);
+      if(tok === before) break;
+    }
+    return tok;
+  }
+
+  function extractKeywords(texts, topN){
+    const freq = {};
+    texts.forEach(text => {
+      const cleaned = String(text || '').replace(/[^가-힣a-zA-Z0-9\s]/g, ' ');
+      cleaned.split(/\s+/).forEach(raw => {
+        if(!raw) return;
+        const tok = cleanToken(raw);
+        if(tok.length < 2) return;
+        if(STOPWORDS.has(tok)) return;
+        if(/^[0-9]+$/.test(tok)) return;
+        freq[tok] = (freq[tok] || 0) + 1;
+      });
+    });
+    return Object.entries(freq)
+      .sort((a,b) => b[1] - a[1])
+      .slice(0, topN);
+  }
+
+  function renderKeywords(list){
+    if(list.length === 0){
+      keywordCloud.innerHTML = '<div class="keyword-empty">아직 반복되는 키워드를 찾지 못했어요.</div>';
+      return;
+    }
+    const maxCount = list[0][1];
+    keywordCloud.innerHTML = list.map(([word, count]) => {
+      const ratio = count / maxCount;
+      const fontSize = 14 + Math.round(ratio * 14); // 14px ~ 28px
+      return `<span class="keyword-chip" style="font-size:${fontSize}px;">${escapeHtml(word)}<span class="cnt">${count}회</span></span>`;
+    }).join('');
+  }
+
+  // ---- Stop/Start/Amplify 보드 ----
+  function myCountByCat(entries, cat){
+    const myToken = getDeviceToken();
+    return entries.filter(e => e.category === cat && e.deviceToken === myToken).length;
+  }
+
+  function renderBoard(entries){
+    const myToken = getDeviceToken();
+    CATS.forEach(cat => {
+      const list = entries.filter(e => e.category === cat).sort((a,b) => (b.ts||0)-(a.ts||0));
+      const quotaEl = document.querySelector(`[data-quota="${cat}"]`);
+      const listEl = document.querySelector(`[data-list="${cat}"]`);
+      const addBtn = document.querySelector(`[data-submit="${cat}"]`);
+      const myN = myCountByCat(entries, cat);
+
+      if(quotaEl) quotaEl.textContent = `${myN}/${MAX_PER_CAT}`;
+      if(addBtn) addBtn.disabled = myN >= MAX_PER_CAT;
+
+      if(!listEl) return;
+      if(list.length === 0){
+        listEl.innerHTML = '<div class="ssa-empty">아직 아이디어가 없어요</div>';
+        return;
+      }
+      listEl.innerHTML = list.map(e => {
+        const mine = e.deviceToken === myToken;
+        return `
+          <div class="ssa-card ${mine ? 'mine' : ''}">
+            ${mine ? `<button type="button" class="del-btn" data-id="${escapeHtml(e.id)}">×</button>` : ''}
+            ${escapeHtml(e.text)}
+          </div>
+        `;
+      }).join('');
+
+      listEl.querySelectorAll('.del-btn').forEach(btn => {
+        btn.addEventListener('click', () => deleteIdea(btn.dataset.id));
+      });
+    });
+  }
+
+  async function fetchAndRenderBoard(){
+    try{
+      const res = await fetch(SSA_API, { method:'GET', cache:'no-store' });
+      const data = await res.json();
+      renderBoard(data.entries || []);
+    }catch(e){
+      // 다음 폴링에서 재시도
+    }
+  }
+
+  async function submitIdea(cat){
+    const input = document.querySelector(`[data-input="${cat}"]`);
+    const text = input.value.trim();
+    if(!text){ return; }
+    const btn = document.querySelector(`[data-submit="${cat}"]`);
+    btn.disabled = true;
+    try{
+      const res = await fetch(SSA_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'submit', deviceToken:getDeviceToken(), category:cat, text })
+      });
+      const data = await res.json();
+      if(data.ok){
+        input.value = '';
+        await fetchAndRenderBoard();
+      } else if(data.error === 'quota_exceeded'){
+        alert('이 칼럼에는 최대 3개까지만 추가할 수 있어요.');
+        await fetchAndRenderBoard();
+      } else {
+        alert('추가하지 못했어요. 다시 시도해주세요.');
+      }
+    }catch(e){
+      alert('네트워크 오류로 추가하지 못했어요.');
+    }finally{
+      await fetchAndRenderBoard();
+    }
+  }
+
+  async function deleteIdea(id){
+    try{
+      const res = await fetch(SSA_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'delete', deviceToken:getDeviceToken(), id })
+      });
+      const data = await res.json();
+      if(data.ok){
+        await fetchAndRenderBoard();
+      }
+    }catch(e){
+      // 조용히 무시
+    }
+  }
+
+  CATS.forEach(cat => {
+    const btn = document.querySelector(`[data-submit="${cat}"]`);
+    btn.addEventListener('click', () => submitIdea(cat));
+  });
+
+  adminLink.addEventListener('click', async () => {
+    const pw = prompt('관리자 비밀번호를 입력하세요 (Stop/Start/Amplify 아이디어 전체 초기화)');
+    if(pw === null) return;
+    try{
+      const res = await fetch(SSA_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'reset', adminPassword: pw })
+      });
+      const data = await res.json();
+      if(data.ok){
+        alert('전체 초기화되었습니다.');
+        await fetchAndRenderBoard();
+      } else {
+        alert('비밀번호가 올바르지 않습니다.');
+      }
+    }catch(e){
+      alert('초기화 중 오류가 발생했습니다.');
+    }
+  });
+
+  function startPolling(){
+    stopPolling();
+    pollTimer = setInterval(() => {
+      if(document.visibilityState === 'visible'){
+        fetchAndRenderBoard();
+      }
+    }, 5000);
+  }
+  function stopPolling(){
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+      fetchAndRenderBoard();
+    }
+  });
+
+  // 초기 로드: 확정 요소 + 케이스 목록을 가져와 키워드 분석
+  (async function init(){
+    try{
+      const [voteRes, caseRes] = await Promise.all([
+        fetch(VOTE_API, { method:'GET', cache:'no-store' }),
+        fetch(CASE_API, { method:'GET', cache:'no-store' })
+      ]);
+      const voteData = await voteRes.json();
+      const caseData = await caseRes.json();
+      const entries = caseData.entries || [];
+
+      if(entries.length === 0){
+        waitingBox.style.display = 'block';
+        mainContent.style.display = 'none';
+        return;
+      }
+
+      waitingBox.style.display = 'none';
+      mainContent.style.display = 'block';
+
+      const pillarName = NAMES[voteData.confirmedChoice] || '오늘의 요소';
+      contextLine.innerHTML = `<b>${escapeHtml(pillarName)}</b> 관련 케이스 <b>${entries.length}건</b>에서 뽑은 키워드예요`;
+
+      const keywords = extractKeywords(entries.map(e => e.text), TOP_N);
+      renderKeywords(keywords);
+
+      fetchAndRenderBoard();
+      startPolling();
+    }catch(e){
+      waitingBox.style.display = 'block';
+      mainContent.style.display = 'none';
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>
