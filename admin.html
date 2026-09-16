@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>관리자 대시보드 | ZA2030 팀 허들</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<script src="vendor/xlsx.full.min.js"></script>
 <style>
   :root{
     --blue-dark:#1D4E89;
@@ -298,10 +299,10 @@
 
   <div class="card">
     <h2>전체 데이터 다운로드</h2>
-    <p class="sub">먼저 최신 데이터를 불러온 뒤 다운로드하세요. 활동별 CSV는 엑셀에서 바로 열 수 있어요.</p>
+    <p class="sub">먼저 최신 데이터를 불러온 뒤 다운로드하세요. 엑셀 파일 하나에 활동별로 시트가 나뉘어 담기고, 개별 CSV도 따로 받을 수 있어요.</p>
     <div class="btn-row">
       <button type="button" class="dl-btn primary" id="btnLoadAll">1. 최신 데이터 불러오기 <span class="arrow">↻</span></button>
-      <button type="button" class="dl-btn" id="btnDlJson">전체 데이터 한 번에 다운로드 (JSON 백업) <span class="arrow">↓</span></button>
+      <button type="button" class="dl-btn primary" id="btnDlExcel">전체 데이터 엑셀 다운로드 (.xlsx, 활동별 시트) <span class="arrow">↓</span></button>
       <button type="button" class="dl-btn" id="btnDlVote">① 투표 결과 CSV <span class="arrow">↓</span></button>
       <button type="button" class="dl-btn" id="btnDlCase">② 케이스 공유 CSV <span class="arrow">↓</span></button>
       <button type="button" class="dl-btn" id="btnDlSsa">③ Stop/Start/Amplify 아이디어 CSV <span class="arrow">↓</span></button>
@@ -417,16 +418,51 @@
 
   document.getElementById('btnLoadAll').addEventListener('click', fetchAll);
 
-  document.getElementById('btnDlJson').addEventListener('click', () => {
+  function sheetFromRows(rows, colWidths){
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    if(colWidths) ws['!cols'] = colWidths.map(wch => ({ wch }));
+    return ws;
+  }
+
+  function buildWorkbook(){
+    const wb = XLSX.utils.book_new();
+
+    const voteRows = [['요소','득표수']];
+    Object.keys(NAMES).forEach(key => {
+      voteRows.push([NAMES[key], (latest.vote.counts && latest.vote.counts[key]) || 0]);
+    });
+    voteRows.push(['총 참여 인원', latest.vote.total || 0]);
+    voteRows.push(['확정된 요소', latest.vote.confirmedChoice ? NAMES[latest.vote.confirmedChoice] : '(미확정)']);
+    XLSX.utils.book_append_sheet(wb, sheetFromRows(voteRows, [28, 14]), '투표결과');
+
+    const caseRows = [['소속','이름','케이스 내용','공감수','제출일시']];
+    (latest.case.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      caseRows.push([e.team||'', e.name||'', e.text||'', e.likes||0, new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    XLSX.utils.book_append_sheet(wb, sheetFromRows(caseRows, [16, 12, 50, 8, 20]), '케이스공유');
+
+    const CAT_LABEL = { stop:'Stop', start:'Start', amplify:'Amplify' };
+    const ssaRows = [['카테고리','아이디어 내용','제출일시']];
+    (latest.ssa.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      ssaRows.push([CAT_LABEL[e.category] || e.category, e.text||'', new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    XLSX.utils.book_append_sheet(wb, sheetFromRows(ssaRows, [12, 50, 20]), '패턴액션아이디어');
+
+    const pledgeRows = [['이름','소속','확정 요소','실천 아이디어','완성 문장','제출일시']];
+    (latest.pledge.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      const sentence = `나는 ZA2030의 ${e.pillarName}을 ${e.idea}를 통해 더 잘 보여줄 수 있습니다.`;
+      pledgeRows.push([e.name||'', e.team||'', e.pillarName||'', e.idea||'', sentence, new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    XLSX.utils.book_append_sheet(wb, sheetFromRows(pledgeRows, [12, 16, 24, 30, 60, 20]), '실천다짐');
+
+    return wb;
+  }
+
+  document.getElementById('btnDlExcel').addEventListener('click', () => {
     if(!latest.fetchedAt){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
-    const payload = {
-      exportedAt: new Date().toISOString(),
-      vote: latest.vote,
-      case: latest.case,
-      ssa: latest.ssa,
-      pledge: latest.pledge
-    };
-    downloadBlob(JSON.stringify(payload, null, 2), 'za2030-team-huddle-전체데이터.json', 'application/json;charset=utf-8;');
+    if(typeof XLSX === 'undefined'){ dlStatus.textContent = '엑셀 라이브러리를 불러오지 못했어요. 페이지를 새로고침한 뒤 다시 시도해주세요.'; return; }
+    const wb = buildWorkbook();
+    XLSX.writeFile(wb, 'za2030-team-huddle-전체데이터.xlsx');
   });
 
   document.getElementById('btnDlVote').addEventListener('click', () => {
