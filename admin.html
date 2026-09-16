@@ -1,0 +1,462 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>관리자 대시보드 | ZA2030 팀 허들</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --blue-dark:#1D4E89;
+    --blue:#2D6CDF;
+    --danger:#D64550;
+    --ink:#1B2430;
+    --muted:#68758A;
+    --bg:#F4F7FC;
+    --card-bg:#FFFFFF;
+    --line:#E4E9F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    background:linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color:#fff;
+    padding:22px 20px 26px;
+  }
+  header.top .back-link{
+    display:inline-block;
+    font-size:13px;
+    color:#fff;
+    opacity:0.85;
+    text-decoration:none;
+    margin-bottom:10px;
+  }
+  header.top h1{
+    margin:0 0 6px;
+    font-size:22px;
+    font-weight:800;
+  }
+  header.top p{
+    margin:0;
+    font-size:13.5px;
+    opacity:0.92;
+    line-height:1.5;
+  }
+  main{
+    max-width:760px;
+    margin:0 auto;
+    padding:20px 16px 40px;
+  }
+
+  .card{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:20px;
+  }
+  .card h2{
+    margin:0 0 4px;
+    font-size:16px;
+    font-weight:800;
+  }
+  .card .sub{
+    margin:0 0 16px;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:10px;
+  }
+  @media (min-width:520px){
+    .stat-grid{ grid-template-columns:repeat(4, 1fr); }
+  }
+  .stat-box{
+    background:var(--bg);
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:14px 10px;
+    text-align:center;
+  }
+  .stat-box .num{
+    font-size:22px;
+    font-weight:800;
+    color:var(--blue-dark);
+  }
+  .stat-box .label{
+    font-size:11.5px;
+    color:var(--muted);
+    margin-top:4px;
+  }
+  .confirmed-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--muted);
+    margin-top:12px;
+  }
+  .confirmed-note b{ color:var(--ink); }
+
+  .btn-row{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-top:6px;
+  }
+  .dl-btn{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    width:100%;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--ink);
+    border-radius:12px;
+    padding:12px 16px;
+    font-size:14px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+    text-align:left;
+  }
+  .dl-btn:hover{
+    border-color:var(--blue);
+    background:#EAF1FD;
+  }
+  .dl-btn .arrow{ color:var(--blue); font-weight:900; }
+  .dl-btn.primary{
+    border-color:var(--blue);
+    background:var(--blue);
+    color:#fff;
+  }
+  .dl-btn.primary .arrow{ color:#fff; }
+  .dl-btn.primary:hover{ background:var(--blue-dark); }
+
+  .field-label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .field-input{
+    width:100%;
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+    font-size:14px;
+    font-family:inherit;
+    color:var(--ink);
+    background:#fff;
+    margin-bottom:14px;
+  }
+
+  .danger-card{ border-color:#F6C6CB; }
+  .danger-card h2{ color:var(--danger); }
+
+  .reset-all-btn{
+    width:100%;
+    background:var(--danger);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    margin-bottom:14px;
+  }
+  .reset-all-btn:disabled{ opacity:0.5; cursor:not-allowed; }
+
+  .reset-grid{
+    display:grid;
+    grid-template-columns:repeat(2, 1fr);
+    gap:8px;
+  }
+  .reset-mini-btn{
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    border-radius:10px;
+    padding:9px 8px;
+    font-size:12.5px;
+    font-weight:700;
+    font-family:inherit;
+    cursor:pointer;
+  }
+  .reset-mini-btn:hover{
+    border-color:var(--danger);
+    color:var(--danger);
+  }
+
+  .status-msg{
+    margin-top:12px;
+    font-size:12.5px;
+    line-height:1.6;
+    white-space:pre-wrap;
+    color:var(--muted);
+  }
+
+  footer{
+    text-align:center;
+    padding:24px 16px 30px;
+    font-size:11.5px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <a class="back-link" href="index.html">← 팀 허들 참가자 화면으로</a>
+  <h1>관리자 대시보드</h1>
+  <p>팀 허들 4개 활동(①~④)의 전체 데이터를 한 번에 확인·다운로드·초기화할 수 있어요.</p>
+</header>
+
+<main>
+  <div class="card">
+    <h2>현재 데이터 현황</h2>
+    <p class="sub">각 활동 API에서 실시간으로 불러온 값이에요.</p>
+    <div class="stat-grid">
+      <div class="stat-box"><div class="num" id="statVote">-</div><div class="label">① 투표 참여</div></div>
+      <div class="stat-box"><div class="num" id="statCase">-</div><div class="label">② 케이스 공유</div></div>
+      <div class="stat-box"><div class="num" id="statSsa">-</div><div class="label">③ 아이디어</div></div>
+      <div class="stat-box"><div class="num" id="statPledge">-</div><div class="label">④ 실천 다짐</div></div>
+    </div>
+    <p class="confirmed-note" id="confirmedNote"></p>
+  </div>
+
+  <div class="card">
+    <h2>전체 데이터 다운로드</h2>
+    <p class="sub">먼저 최신 데이터를 불러온 뒤 다운로드하세요. 활동별 CSV는 엑셀에서 바로 열 수 있어요.</p>
+    <div class="btn-row">
+      <button type="button" class="dl-btn primary" id="btnLoadAll">1. 최신 데이터 불러오기 <span class="arrow">↻</span></button>
+      <button type="button" class="dl-btn" id="btnDlJson">전체 데이터 한 번에 다운로드 (JSON 백업) <span class="arrow">↓</span></button>
+      <button type="button" class="dl-btn" id="btnDlVote">① 투표 결과 CSV <span class="arrow">↓</span></button>
+      <button type="button" class="dl-btn" id="btnDlCase">② 케이스 공유 CSV <span class="arrow">↓</span></button>
+      <button type="button" class="dl-btn" id="btnDlSsa">③ Stop/Start/Amplify 아이디어 CSV <span class="arrow">↓</span></button>
+      <button type="button" class="dl-btn" id="btnDlPledge">④ 실천 다짐 CSV <span class="arrow">↓</span></button>
+    </div>
+    <p class="status-msg" id="dlStatus"></p>
+  </div>
+
+  <div class="card danger-card">
+    <h2>전체 초기화</h2>
+    <p class="sub">비밀번호 확인 후 초기화됩니다. <b>초기화 전에 반드시 위에서 데이터를 먼저 다운로드해두세요.</b> 되돌릴 수 없어요.</p>
+    <label class="field-label">관리자 비밀번호</label>
+    <input type="password" class="field-input" id="adminPw" placeholder="비밀번호 입력">
+    <button type="button" class="reset-all-btn" id="btnResetAll">① ~ ④ 전체 초기화</button>
+    <div class="reset-grid">
+      <button type="button" class="reset-mini-btn" data-reset="vote">① 투표만 초기화</button>
+      <button type="button" class="reset-mini-btn" data-reset="case">② 케이스만 초기화</button>
+      <button type="button" class="reset-mini-btn" data-reset="ssa">③ 아이디어만 초기화</button>
+      <button type="button" class="reset-mini-btn" data-reset="pledge">④ 다짐만 초기화</button>
+    </div>
+    <p class="status-msg" id="resetStatus"></p>
+  </div>
+</main>
+
+<footer>
+  © 2026 Joanna Lee. All rights reserved.
+</footer>
+
+<script>
+(function(){
+  const APIS = {
+    vote: '/api/vote',
+    case: '/api/case',
+    ssa: '/api/ssa',
+    pledge: '/api/pledge'
+  };
+  const NAMES = {
+    customer: 'Customer at the Core',
+    speed: 'Speed',
+    global: 'Truly Global',
+    high_perf: 'High Performance Team ZEISS'
+  };
+
+  const statVote = document.getElementById('statVote');
+  const statCase = document.getElementById('statCase');
+  const statSsa = document.getElementById('statSsa');
+  const statPledge = document.getElementById('statPledge');
+  const confirmedNote = document.getElementById('confirmedNote');
+  const dlStatus = document.getElementById('dlStatus');
+  const resetStatus = document.getElementById('resetStatus');
+  const adminPw = document.getElementById('adminPw');
+
+  let latest = { vote: null, case: null, ssa: null, pledge: null, fetchedAt: null };
+
+  function escapeCsvRows(rows){
+    return rows.map(r => r.map(v => `"${String(v == null ? '' : v).replace(/"/g,'""')}"`).join(',')).join('\r\n');
+  }
+
+  function downloadBlob(content, filename, mime){
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function downloadCsv(rows, filename){
+    const csv = escapeCsvRows(rows);
+    downloadBlob('﻿' + csv, filename, 'text/csv;charset=utf-8;');
+  }
+
+  async function fetchAll(){
+    dlStatus.textContent = '불러오는 중...';
+    try{
+      const [voteRes, caseRes, ssaRes, pledgeRes] = await Promise.all([
+        fetch(APIS.vote, { method:'GET', cache:'no-store' }),
+        fetch(APIS.case, { method:'GET', cache:'no-store' }),
+        fetch(APIS.ssa, { method:'GET', cache:'no-store' }),
+        fetch(APIS.pledge, { method:'GET', cache:'no-store' })
+      ]);
+      latest.vote = await voteRes.json();
+      latest.case = await caseRes.json();
+      latest.ssa = await ssaRes.json();
+      latest.pledge = await pledgeRes.json();
+      latest.fetchedAt = new Date();
+
+      statVote.textContent = latest.vote.total ?? 0;
+      statCase.textContent = (latest.case.entries || []).length;
+      statSsa.textContent = (latest.ssa.entries || []).length;
+      statPledge.textContent = (latest.pledge.entries || []).length;
+
+      const pillarName = latest.vote.confirmedChoice ? (NAMES[latest.vote.confirmedChoice] || latest.vote.confirmedChoice) : null;
+      confirmedNote.innerHTML = pillarName
+        ? `오늘 확정된 요소: <b>${pillarName}</b>`
+        : '아직 확정된 요소가 없어요';
+
+      dlStatus.textContent = `${latest.fetchedAt.toLocaleString('ko-KR')} 기준 최신 데이터를 불러왔어요. 이제 아래 버튼으로 다운로드하세요.`;
+    }catch(e){
+      dlStatus.textContent = '데이터를 불러오지 못했어요. 다시 시도해주세요.';
+    }
+  }
+
+  document.getElementById('btnLoadAll').addEventListener('click', fetchAll);
+
+  document.getElementById('btnDlJson').addEventListener('click', () => {
+    if(!latest.fetchedAt){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
+    const payload = {
+      exportedAt: new Date().toISOString(),
+      vote: latest.vote,
+      case: latest.case,
+      ssa: latest.ssa,
+      pledge: latest.pledge
+    };
+    downloadBlob(JSON.stringify(payload, null, 2), 'za2030-team-huddle-전체데이터.json', 'application/json;charset=utf-8;');
+  });
+
+  document.getElementById('btnDlVote').addEventListener('click', () => {
+    if(!latest.vote){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
+    const rows = [['요소','득표수']];
+    Object.keys(NAMES).forEach(key => {
+      rows.push([NAMES[key], (latest.vote.counts && latest.vote.counts[key]) || 0]);
+    });
+    rows.push(['총 참여 인원', latest.vote.total || 0]);
+    rows.push(['확정된 요소', latest.vote.confirmedChoice ? NAMES[latest.vote.confirmedChoice] : '(미확정)']);
+    downloadCsv(rows, 'za2030-오늘의포커스픽-투표결과.csv');
+  });
+
+  document.getElementById('btnDlCase').addEventListener('click', () => {
+    if(!latest.case){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
+    const rows = [['소속','이름','케이스 내용','공감수','제출일시']];
+    (latest.case.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      rows.push([e.team||'', e.name||'', (e.text||'').replace(/\r?\n/g,' '), e.likes||0, new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    downloadCsv(rows, 'za2030-케이스공유.csv');
+  });
+
+  document.getElementById('btnDlSsa').addEventListener('click', () => {
+    if(!latest.ssa){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
+    const CAT_LABEL = { stop:'Stop', start:'Start', amplify:'Amplify' };
+    const rows = [['카테고리','아이디어 내용','제출일시']];
+    (latest.ssa.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      rows.push([CAT_LABEL[e.category] || e.category, (e.text||'').replace(/\r?\n/g,' '), new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    downloadCsv(rows, 'za2030-패턴액션아이디어.csv');
+  });
+
+  document.getElementById('btnDlPledge').addEventListener('click', () => {
+    if(!latest.pledge){ dlStatus.textContent = '먼저 "최신 데이터 불러오기"를 눌러주세요.'; return; }
+    const rows = [['이름','소속','확정 요소','실천 아이디어','완성 문장','제출일시']];
+    (latest.pledge.entries || []).slice().sort((a,b)=>(a.ts||0)-(b.ts||0)).forEach(e => {
+      const sentence = `나는 ZA2030의 ${e.pillarName}을 ${e.idea}를 통해 더 잘 보여줄 수 있습니다.`;
+      rows.push([e.name||'', e.team||'', e.pillarName||'', (e.idea||'').replace(/\r?\n/g,' '), sentence, new Date(e.ts||0).toLocaleString('ko-KR')]);
+    });
+    downloadCsv(rows, 'za2030-실천다짐.csv');
+  });
+
+  async function resetOne(key){
+    const res = await fetch(APIS[key], {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ action:'reset', adminPassword: adminPw.value })
+    });
+    const data = await res.json();
+    return data.ok === true;
+  }
+
+  const LABELS = { vote:'① 오늘의 포커스 픽', case:'② 케이스 공유', ssa:'③ 패턴 & 액션 아이디어', pledge:'④ 실천 다짐' };
+
+  document.getElementById('btnResetAll').addEventListener('click', async () => {
+    if(!adminPw.value){ resetStatus.textContent = '비밀번호를 입력해주세요.'; return; }
+    if(!confirm('정말 4개 활동의 데이터를 모두 초기화할까요? 이 작업은 되돌릴 수 없습니다.\n(다운로드를 먼저 해두셨는지 확인해주세요)')) return;
+
+    resetStatus.textContent = '초기화 중...';
+    const results = {};
+    for(const key of Object.keys(APIS)){
+      try{
+        results[key] = await resetOne(key);
+      }catch(e){
+        results[key] = false;
+      }
+    }
+    const failed = Object.keys(results).filter(k => !results[k]);
+    if(failed.length === 0){
+      resetStatus.textContent = '① ~ ④ 전체 초기화가 완료되었습니다.';
+      await fetchAll();
+    } else if(failed.length === Object.keys(APIS).length){
+      resetStatus.textContent = '비밀번호가 올바르지 않아 초기화하지 못했습니다.';
+    } else {
+      resetStatus.textContent = `일부만 초기화되었습니다. 실패: ${failed.map(k => LABELS[k]).join(', ')}`;
+      await fetchAll();
+    }
+  });
+
+  document.querySelectorAll('.reset-mini-btn').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const key = btn.dataset.reset;
+      if(!adminPw.value){ resetStatus.textContent = '비밀번호를 입력해주세요.'; return; }
+      if(!confirm(`${LABELS[key]} 데이터를 초기화할까요? 이 작업은 되돌릴 수 없습니다.`)) return;
+      resetStatus.textContent = '초기화 중...';
+      try{
+        const ok = await resetOne(key);
+        resetStatus.textContent = ok ? `${LABELS[key]} 초기화가 완료되었습니다.` : '비밀번호가 올바르지 않습니다.';
+        if(ok) await fetchAll();
+      }catch(e){
+        resetStatus.textContent = '초기화 중 오류가 발생했습니다.';
+      }
+    });
+  });
+
+  fetchAll();
+})();
+</script>
+
+</body>
+</html>
