@@ -246,6 +246,7 @@
   .actions{
     display:flex;
     justify-content:center;
+    flex-wrap:wrap;
     gap:10px;
     margin-bottom:10px;
   }
@@ -258,6 +259,30 @@
     padding:10px 18px;
     border-radius:999px;
     cursor:pointer;
+  }
+  .btn-admin-confirm{
+    background:#fff;
+    border:2px solid var(--blue-dark);
+    color:var(--blue-dark);
+    font-weight:700;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:999px;
+    cursor:pointer;
+    display:inline-flex;
+    align-items:center;
+    gap:7px;
+    font-family:inherit;
+  }
+  .admin-only-badge{
+    font-size:9.5px;
+    font-weight:800;
+    background:var(--blue-dark);
+    color:#fff;
+    padding:2px 7px;
+    border-radius:999px;
+    letter-spacing:0.2px;
+    white-space:nowrap;
   }
   .tie-note{
     text-align:center;
@@ -446,6 +471,7 @@
 
     <div class="actions">
       <button class="btn-secondary" id="revoteBtn">다시 선택하기</button>
+      <button type="button" class="btn-admin-confirm" id="confirmLink">오늘의 요소 확정하기 <span class="admin-only-badge">관리자 전용</span></button>
     </div>
 
     <div class="admin-confirm-panel" id="adminConfirmPanel">
@@ -461,7 +487,6 @@
   </section>
 
   <div class="admin-row">
-    <span class="admin-link" id="confirmLink">오늘의 요소 확정하기</span>
     <span class="admin-link" id="adminLink">관리자(초기화)</span>
     <a class="admin-link" href="admin.html" style="text-decoration:none;">⚙ 전체 관리자 대시보드</a>
   </div>
