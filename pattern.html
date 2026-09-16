@@ -200,7 +200,8 @@
   .ssa-col[data-cat="stop"] .name{ color:var(--stop); }
   .ssa-col[data-cat="start"] .name{ color:var(--start); }
   .ssa-col[data-cat="amplify"] .name{ color:var(--amplify); }
-  .ssa-col-head .quota{
+  .ssa-col-head .quota,
+  .ssa-col-head .count{
     font-size:11.5px;
     color:var(--muted);
     font-weight:700;
@@ -308,6 +309,7 @@
     <a class="flow-tab" href="index.html" style="text-decoration:none;">① 오늘의 포커스 픽</a>
     <a class="flow-tab" href="case.html" style="text-decoration:none;">② 케이스 공유</a>
     <span class="flow-tab active">③ 패턴 &amp; 액션 아이디어</span>
+    <a class="flow-tab" href="pledge.html" style="text-decoration:none;">④ 실천 다짐</a>
   </div>
   <h1>패턴 &amp; 액션 아이디어</h1>
   <p>공유된 케이스에서 자주 나온 단어를 확인하고, Stop·Start·Amplify 아이디어를 자유롭게 남겨주세요.</p>
@@ -331,39 +333,41 @@
     </div>
 
     <p class="ssa-title">Stop · Start · Amplify</p>
-    <p class="ssa-desc">위 키워드들을 참고해서, 각 칼럼에 자유롭게 아이디어를 남겨주세요 (완전 익명 · 칼럼당 최대 3개)</p>
+    <p class="ssa-desc">위 키워드들을 참고해서, 각 칼럼에 자유롭게 아이디어를 남겨주세요 (완전 익명 · 칼럼당 최대 3개)<br>남겨주신 아이디어는 다음 활동 "④ 실천 다짐"에서 함께 볼 수 있어요.</p>
 
-    <div class="ssa-board">
-      <div class="ssa-col" data-cat="stop">
-        <div class="ssa-col-head"><span class="name">🛑 Stop</span><span class="quota" data-quota="stop">0/3</span></div>
-        <p class="ssa-col-desc">멈추거나 그만해야 할 것</p>
-        <div class="ssa-input-row">
-          <textarea class="ssa-input" data-input="stop" placeholder="예: 불필요한 보고 절차"></textarea>
+    <section id="writeView">
+      <div class="ssa-board">
+        <div class="ssa-col" data-cat="stop">
+          <div class="ssa-col-head"><span class="name">🛑 Stop</span><span class="quota" data-quota="stop">0/3</span></div>
+          <p class="ssa-col-desc">멈추거나 그만해야 할 것</p>
+          <div class="ssa-input-row">
+            <textarea class="ssa-input" data-input="stop" placeholder="예: 불필요한 보고 절차"></textarea>
+          </div>
+          <button type="button" class="ssa-add-btn" data-submit="stop">추가</button>
+          <div class="ssa-cards" data-mylist="stop" style="margin-top:12px;"></div>
         </div>
-        <button type="button" class="ssa-add-btn" data-submit="stop">추가</button>
-        <div class="ssa-cards" data-list="stop" style="margin-top:12px;"></div>
-      </div>
 
-      <div class="ssa-col" data-cat="start">
-        <div class="ssa-col-head"><span class="name">🌱 Start</span><span class="quota" data-quota="start">0/3</span></div>
-        <p class="ssa-col-desc">새로 시작하면 좋을 것</p>
-        <div class="ssa-input-row">
-          <textarea class="ssa-input" data-input="start" placeholder="예: 주간 고객 피드백 공유 세션"></textarea>
+        <div class="ssa-col" data-cat="start">
+          <div class="ssa-col-head"><span class="name">🌱 Start</span><span class="quota" data-quota="start">0/3</span></div>
+          <p class="ssa-col-desc">새로 시작하면 좋을 것</p>
+          <div class="ssa-input-row">
+            <textarea class="ssa-input" data-input="start" placeholder="예: 주간 고객 피드백 공유 세션"></textarea>
+          </div>
+          <button type="button" class="ssa-add-btn" data-submit="start">추가</button>
+          <div class="ssa-cards" data-mylist="start" style="margin-top:12px;"></div>
         </div>
-        <button type="button" class="ssa-add-btn" data-submit="start">추가</button>
-        <div class="ssa-cards" data-list="start" style="margin-top:12px;"></div>
-      </div>
 
-      <div class="ssa-col" data-cat="amplify">
-        <div class="ssa-col-head"><span class="name">📣 Amplify</span><span class="quota" data-quota="amplify">0/3</span></div>
-        <p class="ssa-col-desc">이미 잘하고 있어서 더 확산할 것</p>
-        <div class="ssa-input-row">
-          <textarea class="ssa-input" data-input="amplify" placeholder="예: 팀 간 자발적 지식 공유"></textarea>
+        <div class="ssa-col" data-cat="amplify">
+          <div class="ssa-col-head"><span class="name">📣 Amplify</span><span class="quota" data-quota="amplify">0/3</span></div>
+          <p class="ssa-col-desc">이미 잘하고 있어서 더 확산할 것</p>
+          <div class="ssa-input-row">
+            <textarea class="ssa-input" data-input="amplify" placeholder="예: 팀 간 자발적 지식 공유"></textarea>
+          </div>
+          <button type="button" class="ssa-add-btn" data-submit="amplify">추가</button>
+          <div class="ssa-cards" data-mylist="amplify" style="margin-top:12px;"></div>
         </div>
-        <button type="button" class="ssa-add-btn" data-submit="amplify">추가</button>
-        <div class="ssa-cards" data-list="amplify" style="margin-top:12px;"></div>
       </div>
-    </div>
+    </section>
 
     <div class="admin-row">
       <span class="admin-link" id="adminLink">관리자(초기화)</span>
@@ -396,8 +400,6 @@
   const contextLine = document.getElementById('contextLine');
   const keywordCloud = document.getElementById('keywordCloud');
   const adminLink = document.getElementById('adminLink');
-
-  let pollTimer = null;
 
   function getDeviceToken(){
     let t = localStorage.getItem('th_device_token');
@@ -495,32 +497,31 @@
     return entries.filter(e => e.category === cat && e.deviceToken === myToken).length;
   }
 
-  function renderBoard(entries){
+  function cardHtml(e, { showDelete }){
+    return `
+      <div class="ssa-card ${showDelete ? 'mine' : ''}">
+        ${showDelete ? `<button type="button" class="del-btn" data-id="${escapeHtml(e.id)}">×</button>` : ''}
+        ${escapeHtml(e.text)}
+      </div>
+    `;
+  }
+
+  // "아이디어 작성" 탭: 내가 남긴 아이디어만(칼럼당 최대 3개), 직접 삭제 가능
+  function renderMyIdeas(entries){
     const myToken = getDeviceToken();
     CATS.forEach(cat => {
-      const list = entries.filter(e => e.category === cat).sort((a,b) => (b.ts||0)-(a.ts||0));
+      const mine = entries.filter(e => e.category === cat && e.deviceToken === myToken).sort((a,b) => (b.ts||0)-(a.ts||0));
       const quotaEl = document.querySelector(`[data-quota="${cat}"]`);
-      const listEl = document.querySelector(`[data-list="${cat}"]`);
+      const listEl = document.querySelector(`[data-mylist="${cat}"]`);
       const addBtn = document.querySelector(`[data-submit="${cat}"]`);
-      const myN = myCountByCat(entries, cat);
 
-      if(quotaEl) quotaEl.textContent = `${myN}/${MAX_PER_CAT}`;
-      if(addBtn) addBtn.disabled = myN >= MAX_PER_CAT;
+      if(quotaEl) quotaEl.textContent = `${mine.length}/${MAX_PER_CAT}`;
+      if(addBtn) addBtn.disabled = mine.length >= MAX_PER_CAT;
 
       if(!listEl) return;
-      if(list.length === 0){
-        listEl.innerHTML = '<div class="ssa-empty">아직 아이디어가 없어요</div>';
-        return;
-      }
-      listEl.innerHTML = list.map(e => {
-        const mine = e.deviceToken === myToken;
-        return `
-          <div class="ssa-card ${mine ? 'mine' : ''}">
-            ${mine ? `<button type="button" class="del-btn" data-id="${escapeHtml(e.id)}">×</button>` : ''}
-            ${escapeHtml(e.text)}
-          </div>
-        `;
-      }).join('');
+      listEl.innerHTML = mine.length === 0
+        ? '<div class="ssa-empty">아직 이 칼럼에 남긴 아이디어가 없어요</div>'
+        : mine.map(e => cardHtml(e, { showDelete:true })).join('');
 
       listEl.querySelectorAll('.del-btn').forEach(btn => {
         btn.addEventListener('click', () => deleteIdea(btn.dataset.id));
@@ -528,13 +529,16 @@
     });
   }
 
+  let latestSsaEntries = [];
+
   async function fetchAndRenderBoard(){
     try{
       const res = await fetch(SSA_API, { method:'GET', cache:'no-store' });
       const data = await res.json();
-      renderBoard(data.entries || []);
+      latestSsaEntries = data.entries || [];
+      renderMyIdeas(latestSsaEntries);
     }catch(e){
-      // 다음 폴링에서 재시도
+      // 다음 시도에서 재시도
     }
   }
 
@@ -609,23 +613,6 @@
     }
   });
 
-  function startPolling(){
-    stopPolling();
-    pollTimer = setInterval(() => {
-      if(document.visibilityState === 'visible'){
-        fetchAndRenderBoard();
-      }
-    }, 5000);
-  }
-  function stopPolling(){
-    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
-  }
-  document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){
-      fetchAndRenderBoard();
-    }
-  });
-
   // 초기 로드: 확정 요소 + 케이스 목록을 가져와 키워드 분석
   (async function init(){
     try{
@@ -653,7 +640,6 @@
       renderKeywords(keywords);
 
       fetchAndRenderBoard();
-      startPolling();
     }catch(e){
       waitingBox.style.display = 'block';
       mainContent.style.display = 'none';

@@ -1,0 +1,732 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>실천 다짐 | ZA2030 팀 허들</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --blue-dark:#1D4E89;
+    --blue:#2D6CDF;
+    --customer:#2D6CDF;
+    --speed:#E8823C;
+    --global:#2FA36B;
+    --highperf:#7B5FC7;
+    --stop:#D64550;
+    --start:#2FA36B;
+    --amplify:#E8823C;
+    --ink:#1B2430;
+    --muted:#68758A;
+    --bg:#F4F7FC;
+    --card-bg:#FFFFFF;
+    --line:#E4E9F2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    -webkit-font-smoothing:antialiased;
+  }
+  header.top{
+    background:linear-gradient(135deg, var(--blue-dark), var(--blue));
+    color:#fff;
+    padding:22px 20px 26px;
+  }
+  .flow-tabs{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .flow-tab{
+    font-size:13px;
+    padding:6px 12px;
+    border-radius:999px;
+    background:rgba(255,255,255,0.16);
+    color:#fff;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .flow-tab.active{
+    background:#fff;
+    color:var(--blue-dark);
+  }
+  header.top h1{
+    margin:0 0 6px;
+    font-size:22px;
+    font-weight:800;
+  }
+  header.top p{
+    margin:0;
+    font-size:14px;
+    opacity:0.92;
+    line-height:1.5;
+  }
+  main{
+    max-width:920px;
+    margin:0 auto;
+    padding:20px 16px 40px;
+  }
+
+  .waiting-box{
+    background:var(--card-bg);
+    border:2px dashed var(--line);
+    border-radius:18px;
+    padding:32px 22px;
+    text-align:center;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.7;
+  }
+  .waiting-box a{
+    display:inline-block;
+    margin-top:14px;
+    background:var(--blue);
+    color:#fff;
+    text-decoration:none;
+    font-weight:700;
+    font-size:13px;
+    padding:10px 18px;
+    border-radius:999px;
+  }
+
+  .context-line{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:16px;
+  }
+  .context-line b{ color:var(--ink); }
+
+  /* 참고용 아이디어 보드 */
+  .ref-card{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:20px;
+    margin-bottom:22px;
+  }
+  .ref-card h2{
+    margin:0 0 4px;
+    font-size:16px;
+    font-weight:800;
+  }
+  .ref-card .sub{
+    margin:0 0 14px;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.5;
+  }
+  .ssa-board{
+    display:flex;
+    flex-direction:column;
+    gap:14px;
+  }
+  @media (min-width:760px){
+    .ssa-board{
+      flex-direction:row;
+      align-items:flex-start;
+    }
+    .ssa-col{ flex:1; min-width:0; }
+  }
+  .ssa-col{
+    background:var(--bg);
+    border:2px solid var(--line);
+    border-radius:14px;
+    padding:12px;
+  }
+  .ssa-col[data-cat="stop"]{ border-top:5px solid var(--stop); }
+  .ssa-col[data-cat="start"]{ border-top:5px solid var(--start); }
+  .ssa-col[data-cat="amplify"]{ border-top:5px solid var(--amplify); }
+  .ssa-col-head{
+    display:flex;
+    justify-content:space-between;
+    align-items:baseline;
+    margin-bottom:8px;
+  }
+  .ssa-col-head .name{
+    font-weight:800;
+    font-size:14px;
+  }
+  .ssa-col[data-cat="stop"] .name{ color:var(--stop); }
+  .ssa-col[data-cat="start"] .name{ color:var(--start); }
+  .ssa-col[data-cat="amplify"] .name{ color:var(--amplify); }
+  .ssa-col-head .count{
+    font-size:11.5px;
+    color:var(--muted);
+    font-weight:700;
+  }
+  .ssa-cards{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+    max-height:260px;
+    overflow-y:auto;
+  }
+  .ssa-pick-card{
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:10px;
+    padding:9px 11px;
+    font-size:12.5px;
+    line-height:1.5;
+    white-space:pre-wrap;
+    cursor:pointer;
+    text-align:left;
+  }
+  .ssa-pick-card:hover{
+    border-color:var(--blue);
+    background:#EAF1FD;
+  }
+  .ssa-pick-card.picked{
+    border-color:var(--blue);
+    background:#EAF1FD;
+    font-weight:700;
+  }
+  .ssa-empty{
+    color:var(--muted);
+    font-size:12px;
+    text-align:center;
+    padding:12px 0;
+  }
+
+  .ssa-title{
+    text-align:center;
+    font-size:15px;
+    font-weight:800;
+    margin:0 0 4px;
+  }
+
+  .view-tabs{
+    display:flex;
+    gap:8px;
+    margin-bottom:16px;
+  }
+  .view-tab{
+    flex:1;
+    text-align:center;
+    padding:11px 10px;
+    border-radius:12px;
+    border:2px solid var(--line);
+    background:#fff;
+    color:var(--muted);
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .view-tab.active{
+    border-color:var(--blue);
+    color:var(--blue-dark);
+    background:#EAF1FD;
+  }
+  #writeView{ display:none; }
+  #boardView{ display:none; }
+
+  /* 다짐 문장 카드 */
+  .pledge-card{
+    background:var(--card-bg);
+    border:2px solid var(--line);
+    border-radius:18px;
+    padding:22px 20px;
+    margin-bottom:22px;
+  }
+  .field-label{
+    display:block;
+    font-size:13px;
+    font-weight:700;
+    color:var(--ink);
+    margin:0 0 6px;
+  }
+  .field-row{
+    display:flex;
+    gap:10px;
+    margin-bottom:14px;
+  }
+  .field-row .field-input{ flex:1; }
+  .field-input{
+    width:100%;
+    border:2px solid var(--line);
+    border-radius:12px;
+    padding:11px 13px;
+    font-size:14px;
+    font-family:inherit;
+    color:var(--ink);
+    background:#fff;
+  }
+
+  .sentence-box{
+    background:#EAF1FD;
+    border:2px dashed var(--blue);
+    border-radius:16px;
+    padding:20px 18px;
+    font-size:16px;
+    line-height:2.1;
+    color:var(--ink);
+    margin-bottom:6px;
+  }
+  .sentence-box .pillar-badge{
+    display:inline-block;
+    background:var(--blue-dark);
+    color:#fff;
+    border-radius:999px;
+    padding:3px 12px;
+    font-weight:800;
+    font-size:14px;
+    margin:0 2px;
+  }
+  .idea-input{
+    display:inline-block;
+    width:100%;
+    max-width:460px;
+    vertical-align:middle;
+    border:none;
+    border-bottom:2.5px solid var(--blue);
+    background:transparent;
+    font-family:inherit;
+    font-size:15px;
+    font-weight:700;
+    color:var(--blue-dark);
+    padding:2px 4px;
+    margin:0 2px;
+  }
+  .idea-input::placeholder{
+    color:#8FAEDD;
+    font-weight:500;
+  }
+  .idea-hint{
+    font-size:12px;
+    color:var(--muted);
+    margin:8px 0 0;
+  }
+
+  .submit-btn{
+    width:100%;
+    margin-top:18px;
+    background:var(--blue);
+    color:#fff;
+    border:none;
+    border-radius:999px;
+    padding:13px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+  }
+  .submit-btn:disabled{
+    opacity:0.5;
+    cursor:not-allowed;
+  }
+  .edit-note{
+    text-align:center;
+    font-size:12.5px;
+    color:var(--blue-dark);
+    background:#EAF1FD;
+    border-radius:10px;
+    padding:8px 10px;
+    margin-top:12px;
+    display:none;
+  }
+
+  /* 함께 보기: 다짐 리스트 */
+  .board-summary{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin-bottom:16px;
+  }
+  .pledge-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .pledge-item{
+    background:#fff;
+    border:2px solid var(--line);
+    border-left:5px solid var(--blue);
+    border-radius:14px;
+    padding:14px 18px;
+  }
+  .pledge-item .who{
+    font-weight:800;
+    font-size:13px;
+    color:var(--blue-dark);
+    margin-bottom:6px;
+  }
+  .pledge-item .sentence{
+    font-size:14.5px;
+    line-height:1.65;
+    color:var(--ink);
+  }
+  .pledge-item .sentence b{
+    color:var(--blue-dark);
+  }
+  .empty-note{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    padding:30px 0;
+  }
+
+  .admin-row{
+    display:flex;
+    justify-content:center;
+    margin-top:22px;
+  }
+  .admin-link{
+    font-size:11.5px;
+    color:var(--muted);
+    text-decoration:underline;
+    cursor:pointer;
+  }
+
+  footer{
+    text-align:center;
+    padding:24px 16px 30px;
+    font-size:11.5px;
+    color:var(--muted);
+  }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="flow-tabs">
+    <a class="flow-tab" href="index.html" style="text-decoration:none;">① 오늘의 포커스 픽</a>
+    <a class="flow-tab" href="case.html" style="text-decoration:none;">② 케이스 공유</a>
+    <a class="flow-tab" href="pattern.html" style="text-decoration:none;">③ 패턴 &amp; 액션 아이디어</a>
+    <span class="flow-tab active">④ 실천 다짐</span>
+  </div>
+  <h1>나의 실천 다짐</h1>
+  <p>함께 나온 아이디어를 참고해서, 나만의 실천 문장을 완성해보세요.</p>
+</header>
+
+<main>
+  <div id="waitingBox" class="waiting-box" style="display:none;">
+    아직 확정된 오늘의 요소가 없어요.<br>
+    "오늘의 포커스 픽" 활동에서 먼저 요소를 확정해주세요.
+    <br>
+    <a href="index.html">① 오늘의 포커스 픽으로 이동</a>
+  </div>
+
+  <div id="mainContent" style="display:none;">
+    <p class="context-line" id="contextLine"></p>
+
+    <div class="ref-card">
+      <h2>Stop · Start · Amplify 아이디어 모아보기</h2>
+      <p class="sub">모두가 남긴 아이디어예요. 카드를 눌러 아래 문장에 바로 채워 넣을 수 있어요.</p>
+      <div class="ssa-board">
+        <div class="ssa-col" data-cat="stop">
+          <div class="ssa-col-head"><span class="name">🛑 Stop</span><span class="count" data-count="stop">0개</span></div>
+          <div class="ssa-cards" data-list="stop"></div>
+        </div>
+        <div class="ssa-col" data-cat="start">
+          <div class="ssa-col-head"><span class="name">🌱 Start</span><span class="count" data-count="start">0개</span></div>
+          <div class="ssa-cards" data-list="start"></div>
+        </div>
+        <div class="ssa-col" data-cat="amplify">
+          <div class="ssa-col-head"><span class="name">📣 Amplify</span><span class="count" data-count="amplify">0개</span></div>
+          <div class="ssa-cards" data-list="amplify"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="view-tabs">
+      <button type="button" class="view-tab" id="tabWrite">다짐 작성</button>
+      <button type="button" class="view-tab" id="tabBoard">함께 보기</button>
+    </div>
+
+    <section id="writeView">
+      <div class="pledge-card">
+        <div class="field-row">
+          <div>
+            <label class="field-label">이름</label>
+            <input type="text" class="field-input" id="nameInput" placeholder="이름" maxlength="30">
+          </div>
+          <div>
+            <label class="field-label">소속(팀)</label>
+            <input type="text" class="field-input" id="teamInput" placeholder="소속 팀" maxlength="40">
+          </div>
+        </div>
+
+        <div class="sentence-box">
+          나는 ZA2030의 <span class="pillar-badge" id="pillarBadge">-</span>을
+          <input type="text" class="idea-input" id="ideaInput" placeholder="아이디어를 입력하거나 위 카드를 선택하세요" maxlength="200">
+          를 통해 더 잘 보여줄 수 있습니다.
+        </div>
+        <p class="idea-hint">위 아이디어 카드를 눌러 채우거나, 직접 자유롭게 입력해도 좋아요.</p>
+
+        <button type="button" class="submit-btn" id="submitBtn">다짐 완성하기</button>
+        <p class="edit-note" id="editNote">이미 제출한 다짐이 있어요. 다시 제출하면 기존 내용이 수정돼요.</p>
+      </div>
+    </section>
+
+    <section id="boardView">
+      <p class="board-summary" id="boardSummary">아직 제출된 다짐이 없어요</p>
+      <div class="pledge-list" id="pledgeList"></div>
+    </section>
+
+    <div class="admin-row">
+      <span class="admin-link" id="adminLink">관리자(초기화)</span>
+    </div>
+  </div>
+</main>
+
+<footer>
+  © 2026 Joanna Lee. All rights reserved.
+</footer>
+
+<script>
+(function(){
+  const VOTE_API = '/api/vote';
+  const SSA_API = '/api/ssa';
+  const PLEDGE_API = '/api/pledge';
+  const CATS = ['stop','start','amplify'];
+
+  const NAMES = {
+    customer: 'Customer at the Core',
+    speed: 'Speed',
+    global: 'Truly Global',
+    high_perf: 'High Performance Team ZEISS'
+  };
+
+  const waitingBox = document.getElementById('waitingBox');
+  const mainContent = document.getElementById('mainContent');
+  const contextLine = document.getElementById('contextLine');
+  const pillarBadge = document.getElementById('pillarBadge');
+  const nameInput = document.getElementById('nameInput');
+  const teamInput = document.getElementById('teamInput');
+  const ideaInput = document.getElementById('ideaInput');
+  const submitBtn = document.getElementById('submitBtn');
+  const editNote = document.getElementById('editNote');
+  const adminLink = document.getElementById('adminLink');
+  const tabWrite = document.getElementById('tabWrite');
+  const tabBoard = document.getElementById('tabBoard');
+  const writeView = document.getElementById('writeView');
+  const boardView = document.getElementById('boardView');
+  const boardSummary = document.getElementById('boardSummary');
+  const pledgeList = document.getElementById('pledgeList');
+
+  let currentView = 'write';
+  let pollTimer = null;
+  let confirmedKey = null;
+  let confirmedName = '';
+  let myExistingEntry = null;
+
+  function getDeviceToken(){
+    let t = localStorage.getItem('th_device_token');
+    if(!t){
+      t = 'd_' + Date.now().toString(36) + '_' + Math.random().toString(36).slice(2, 10);
+      localStorage.setItem('th_device_token', t);
+    }
+    return t;
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+
+  function renderIdeaBoard(entries){
+    CATS.forEach(cat => {
+      const list = entries.filter(e => e.category === cat).sort((a,b) => (b.ts||0)-(a.ts||0));
+      const countEl = document.querySelector(`[data-count="${cat}"]`);
+      const listEl = document.querySelector(`[data-list="${cat}"]`);
+      if(countEl) countEl.textContent = `${list.length}개`;
+      if(!listEl) return;
+      listEl.innerHTML = list.length === 0
+        ? '<div class="ssa-empty">아직 아이디어가 없어요</div>'
+        : list.map(e => `<button type="button" class="ssa-pick-card" data-idea="${escapeHtml(e.text)}">${escapeHtml(e.text)}</button>`).join('');
+      listEl.querySelectorAll('.ssa-pick-card').forEach(btn => {
+        btn.addEventListener('click', () => {
+          ideaInput.value = btn.dataset.idea;
+          document.querySelectorAll('.ssa-pick-card').forEach(b => b.classList.remove('picked'));
+          btn.classList.add('picked');
+          ideaInput.focus();
+        });
+      });
+    });
+  }
+
+  function pledgeSentenceHtml(e){
+    return `나는 ZA2030의 <b>${escapeHtml(e.pillarName)}</b>을 <b>${escapeHtml(e.idea)}</b>를 통해 더 잘 보여줄 수 있습니다.`;
+  }
+
+  function renderPledgeBoard(entries){
+    const sorted = entries.slice().sort((a,b) => (b.ts||0)-(a.ts||0));
+    boardSummary.textContent = sorted.length === 0 ? '아직 제출된 다짐이 없어요' : `지금까지 ${sorted.length}명이 다짐을 남겼어요`;
+    pledgeList.innerHTML = sorted.length === 0
+      ? ''
+      : sorted.map(e => `
+        <div class="pledge-item">
+          <div class="who">${escapeHtml(e.name)} · ${escapeHtml(e.team)}</div>
+          <div class="sentence">${pledgeSentenceHtml(e)}</div>
+        </div>
+      `).join('');
+  }
+
+  async function fetchIdeas(){
+    try{
+      const res = await fetch(SSA_API, { method:'GET', cache:'no-store' });
+      const data = await res.json();
+      renderIdeaBoard(data.entries || []);
+    }catch(e){ /* 무시, 다음 새로고침에서 재시도 */ }
+  }
+
+  async function fetchPledges(){
+    try{
+      const res = await fetch(PLEDGE_API, { method:'GET', cache:'no-store' });
+      const data = await res.json();
+      const entries = data.entries || [];
+      renderPledgeBoard(entries);
+
+      const myToken = getDeviceToken();
+      myExistingEntry = entries.find(e => e.deviceToken === myToken) || null;
+      if(myExistingEntry){
+        nameInput.value = myExistingEntry.name;
+        teamInput.value = myExistingEntry.team;
+        ideaInput.value = myExistingEntry.idea;
+        editNote.style.display = 'block';
+        submitBtn.textContent = '다짐 수정하기';
+      } else {
+        editNote.style.display = 'none';
+        submitBtn.textContent = '다짐 완성하기';
+      }
+    }catch(e){ /* 무시 */ }
+  }
+
+  function showWrite(){
+    currentView = 'write';
+    writeView.style.display = 'block';
+    boardView.style.display = 'none';
+    tabWrite.classList.add('active');
+    tabBoard.classList.remove('active');
+    stopPolling();
+  }
+
+  function showBoard(){
+    currentView = 'board';
+    writeView.style.display = 'none';
+    boardView.style.display = 'block';
+    tabBoard.classList.add('active');
+    tabWrite.classList.remove('active');
+    fetchPledges();
+    startPolling();
+  }
+
+  tabWrite.addEventListener('click', showWrite);
+  tabBoard.addEventListener('click', showBoard);
+
+  async function submitPledge(){
+    const name = nameInput.value.trim();
+    const team = teamInput.value.trim();
+    const idea = ideaInput.value.trim();
+    if(!name || !team || !idea){
+      alert('이름, 소속, 실천 아이디어를 모두 입력해주세요.');
+      return;
+    }
+    submitBtn.disabled = true;
+    try{
+      const res = await fetch(PLEDGE_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          action:'submit',
+          deviceToken:getDeviceToken(),
+          name, team,
+          pillarKey: confirmedKey,
+          pillarName: confirmedName,
+          idea
+        })
+      });
+      const data = await res.json();
+      if(data.ok){
+        alert(data.updated ? '다짐이 수정되었습니다.' : '다짐이 제출되었습니다. 감사합니다!');
+        await fetchPledges();
+        showBoard();
+      } else {
+        alert('제출하지 못했어요. 다시 시도해주세요.');
+      }
+    }catch(e){
+      alert('네트워크 오류로 제출하지 못했어요.');
+    }finally{
+      submitBtn.disabled = false;
+    }
+  }
+
+  submitBtn.addEventListener('click', submitPledge);
+
+  adminLink.addEventListener('click', async () => {
+    const pw = prompt('관리자 비밀번호를 입력하세요 (제출된 다짐 전체 초기화)');
+    if(pw === null) return;
+    try{
+      const res = await fetch(PLEDGE_API, {
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ action:'reset', adminPassword: pw })
+      });
+      const data = await res.json();
+      if(data.ok){
+        alert('전체 초기화되었습니다.');
+        myExistingEntry = null;
+        nameInput.value = '';
+        teamInput.value = '';
+        ideaInput.value = '';
+        await fetchPledges();
+      } else {
+        alert('비밀번호가 올바르지 않습니다.');
+      }
+    }catch(e){
+      alert('초기화 중 오류가 발생했습니다.');
+    }
+  });
+
+  function startPolling(){
+    stopPolling();
+    pollTimer = setInterval(() => {
+      if(document.visibilityState === 'visible' && currentView === 'board'){
+        fetchPledges();
+      }
+    }, 5000);
+  }
+  function stopPolling(){
+    if(pollTimer){ clearInterval(pollTimer); pollTimer = null; }
+  }
+  document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible' && currentView === 'board'){
+      fetchPledges();
+    }
+  });
+
+  (async function init(){
+    try{
+      const voteRes = await fetch(VOTE_API, { method:'GET', cache:'no-store' });
+      const voteData = await voteRes.json();
+      if(!voteData.confirmedChoice){
+        waitingBox.style.display = 'block';
+        mainContent.style.display = 'none';
+        return;
+      }
+      confirmedKey = voteData.confirmedChoice;
+      confirmedName = NAMES[confirmedKey] || '오늘의 요소';
+
+      waitingBox.style.display = 'none';
+      mainContent.style.display = 'block';
+      contextLine.innerHTML = `오늘 확정된 요소 <b>${escapeHtml(confirmedName)}</b>를 나의 실천으로 이어가보세요`;
+      pillarBadge.textContent = confirmedName;
+
+      showWrite();
+      await Promise.all([fetchIdeas(), fetchPledges()]);
+    }catch(e){
+      waitingBox.style.display = 'block';
+      mainContent.style.display = 'none';
+    }
+  })();
+})();
+</script>
+
+</body>
+</html>
