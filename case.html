@@ -401,7 +401,6 @@
       <div id="boardList"></div>
       <div class="board-actions">
         <button type="button" class="link-btn" id="csvBtn">CSV 다운로드</button>
-        <span class="link-btn" id="adminLink">관리자(초기화)</span>
         <a class="link-btn" href="admin.html" style="text-decoration:none;">⚙ 전체 관리자 대시보드</a>
       </div>
     </section>
@@ -490,7 +489,6 @@
   const boardSummary = document.getElementById('boardSummary');
   const boardList = document.getElementById('boardList');
   const csvBtn = document.getElementById('csvBtn');
-  const adminLink = document.getElementById('adminLink');
 
   let currentView = 'write';
   let pollTimer = null;
@@ -731,27 +729,6 @@
   tabBoard.addEventListener('click', showBoard);
   submitBtn.addEventListener('click', submitEntry);
   csvBtn.addEventListener('click', downloadCsv);
-
-  adminLink.addEventListener('click', async () => {
-    const pw = prompt('관리자 비밀번호를 입력하세요 (이 활동의 케이스 전체 초기화)');
-    if(pw === null) return;
-    try{
-      const res = await fetch(CASE_API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'reset', adminPassword: pw })
-      });
-      const data = await res.json();
-      if(data.ok){
-        alert('전체 초기화되었습니다.');
-        await fetchAndRenderBoard();
-      } else {
-        alert('비밀번호가 올바르지 않습니다.');
-      }
-    }catch(e){
-      alert('초기화 중 오류가 발생했습니다.');
-    }
-  });
 
   // 초기 로드: 활동1의 확정 요소를 먼저 확인
   (async function init(){

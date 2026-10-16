@@ -370,8 +370,7 @@
     </section>
 
     <div class="admin-row">
-      <span class="admin-link" id="adminLink">관리자(초기화)</span>
-      <a class="admin-link" href="admin.html" style="text-decoration:none; margin-left:14px;">⚙ 전체 관리자 대시보드</a>
+      <a class="admin-link" href="admin.html" style="text-decoration:none;">⚙ 전체 관리자 대시보드</a>
     </div>
   </div>
 </main>
@@ -400,7 +399,6 @@
   const mainContent = document.getElementById('mainContent');
   const contextLine = document.getElementById('contextLine');
   const keywordCloud = document.getElementById('keywordCloud');
-  const adminLink = document.getElementById('adminLink');
 
   function getDeviceToken(){
     let t = localStorage.getItem('th_device_token');
@@ -591,27 +589,6 @@
   CATS.forEach(cat => {
     const btn = document.querySelector(`[data-submit="${cat}"]`);
     btn.addEventListener('click', () => submitIdea(cat));
-  });
-
-  adminLink.addEventListener('click', async () => {
-    const pw = prompt('관리자 비밀번호를 입력하세요 (Stop/Start/Amplify 아이디어 전체 초기화)');
-    if(pw === null) return;
-    try{
-      const res = await fetch(SSA_API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'reset', adminPassword: pw })
-      });
-      const data = await res.json();
-      if(data.ok){
-        alert('전체 초기화되었습니다.');
-        await fetchAndRenderBoard();
-      } else {
-        alert('비밀번호가 올바르지 않습니다.');
-      }
-    }catch(e){
-      alert('초기화 중 오류가 발생했습니다.');
-    }
   });
 
   // 초기 로드: 확정 요소 + 케이스 목록을 가져와 키워드 분석

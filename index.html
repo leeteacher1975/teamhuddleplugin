@@ -487,7 +487,6 @@
   </section>
 
   <div class="admin-row">
-    <span class="admin-link" id="adminLink">관리자(초기화)</span>
     <a class="admin-link" href="admin.html" style="text-decoration:none;">⚙ 전체 관리자 대시보드</a>
   </div>
 </main>
@@ -513,7 +512,6 @@
   const winnerBanner = document.getElementById('winnerBanner');
   const tieNote = document.getElementById('tieNote');
   const revoteBtn = document.getElementById('revoteBtn');
-  const adminLink = document.getElementById('adminLink');
   const confirmLink = document.getElementById('confirmLink');
   const adminConfirmPanel = document.getElementById('adminConfirmPanel');
   const adminConfirmCancel = document.getElementById('adminConfirmCancel');
@@ -669,29 +667,6 @@
   revoteBtn.addEventListener('click', showSelect);
   tabSelect.addEventListener('click', showSelect);
   tabResults.addEventListener('click', showResults);
-
-  adminLink.addEventListener('click', async () => {
-    const pw = prompt('관리자 비밀번호를 입력하세요 (전체 초기화 — 확정된 요소도 함께 초기화됩니다)');
-    if(pw === null) return;
-    try{
-      const res = await fetch(API, {
-        method:'POST',
-        headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ action:'reset', adminPassword: pw })
-      });
-      const data = await res.json();
-      if(data.ok){
-        localStorage.removeItem('th_my_choice');
-        localStorage.removeItem('th_vote_reset_at');
-        alert('전체 초기화되었습니다.');
-        showSelect();
-      } else {
-        alert('비밀번호가 올바르지 않습니다.');
-      }
-    }catch(e){
-      alert('초기화 중 오류가 발생했습니다.');
-    }
-  });
 
   confirmLink.addEventListener('click', async () => {
     const pw = prompt('관리자 비밀번호를 입력하세요 (오늘의 요소 확정)');
